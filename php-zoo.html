@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+        <meta charset="UTF-8">
+        <title>Animal Zoo - PHP Version</title>
+        <style>
+            body{
+                font-family: 'Times New Roman', Times, serif;
+                max-width: 800;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: bisque;
+            }
+            .container {
+                background: white;
+                padding: 20px;
+                border-radius: 15px;
+               
+            }
+            h1{
+                color:orangered;
+                text-align: center;
+            }
+            .formGroup{
+                margin-bottom: 15px;
+            }
+            label{
+                display: block;
+                margin-bottom: 6px;
+                font-weight: bold;
+            }
+            input, select{
+                width: 100%;
+                padding: 8px;
+                border: 1px solid;
+                border-radius: 3px;
+                box-sizing: border-box;
+            }
+            button{
+                background-color: red;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+
+            }
+            button:hover{
+                background-color: chocolate;
+            }
+            .error{
+                color:red;
+                font-size: 14px;
+                margin-top: 5px;
+
+            }
+            .hidden{
+                display: none;
+            }
+            .animal-display{
+                display: flex;
+                margin-top: 20px;
+                gap: 20px;
+            }
+            .animal-image{
+                max-width: 400px;
+                max-height: 400px;
+                border-radius: 8px;
+            }
+            .animal-description{
+                flex: 1;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Welcome to the PHP Animal Zoo!</h1>
+
+            <!--Name input-->
+            <!--Name Input-->
+            <div id="nameSection">
+                <div class="formGroup">
+                    <label for="userName">Please Enter your Name: </label>
+                    <input type="text" id="userName" name="userName" required>
+                    <div id="nameError" class="error"></div>
+                </div>
+                <button onclick="validateName()">Enter Zoo</button>
+            </div>
+
+            <div id="animalSelection" class="hidden">
+                <form id="animalForm" action="animals.php" method="POST">
+                    <input type="hidden" id="hiddenName" name="userName">
+
+                    <div class="formGroup">
+                        <label id="animalPrompt">Please Choose an Animal: </label>
+                        <select id="animalSelect" name="animal" required>
+
+                            <option value="">--Select An Animal--</option>
+                            <option value="lion">Lion</option>
+                            <option value="elephant">Elephant</option>
+                            <option value="giraffe">Giraffe</option>
+                            <option value="penguin">Penguin</option>
+                            <option value="dolphin">Dolphin</option>
+                            <option value="tiger">Tiger</option>
+
+                        </select>
+                        <div id="animalError" class="error"></div>
+
+                    </div>
+
+                    <button type="submit">Meet the Animal</button>
+                </form>
+            </div>
+
+        </div>
+
+         <script>
+
+            function validateName(){
+                const nameInput = document.getElementById('userName');
+                const nameError = document.getElementById('nameError');
+                const name = nameInput.value.trim();
+                
+                if (name === ''){
+                    nameError.textContent = 'Please Input your Name';
+                    return;
+                }
+                
+                //if the name is valid
+                nameError.textContent = '';
+                
+                //Hide the name and show the animal Section 
+                document.getElementById('nameSection').classList.add('hidden');
+                document.getElementById('animalSelection').classList.remove('hidden');
+                
+                //Setting the hidden field and updatin the prompt 
+                document.getElementById('hiddenName').value = name;
+                document.getElementById('animalChoose').textContent = `Hello ${name}, please choose an Animal`;
+        
+            }
+
+            //Validating the Form
+            document.getElementById('animalForm').addEventListener('submit', function(e) {
+                
+                const animalSelect = document.getElementById('animalSelect');
+                const animalError = document.getElementById('animalError');
+
+                if(animalSelect.value === ''){
+                    e.preventDefault();
+                    animalError.textContent = 'Please Select an Animal';
+                }else{
+                    animalError.textContent = '';
+                }
+
+            });
+
+
+        </script>
+
+
+    </body>
+
+</html>
