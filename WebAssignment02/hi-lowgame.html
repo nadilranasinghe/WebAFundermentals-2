@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PROG1275 - A02: Hi-Low Game</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+           
+        }
+
+        .game-container{
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+        }
+
+        .input-selection{
+            margin: 20px 0;
+        }
+
+        input{
+            padding: 8px;
+            margin: 10px 0;
+            width: 200px;
+        }
+
+
+
+        button{
+            padding: 8px 15px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover{
+            background-color: rgb(29, 234, 2);
+        }
+
+        .error{
+            color: red;
+            margin: 10px 0;
+
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        #winMessage{
+            font-size: 24px;
+            font-weight: bold;
+            color: blueviolet;
+            margin: 20px 0;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Game heading -->
+    <h1> Hi-Low Game</h1>
+
+    <div id="game-container">
+        <!-- Input for Name-->
+        <div type="text" id="nameSection" class="input-selection">
+            <label for="playerName">Please Enter your Name: </label><br>
+            <input type="text" id="playerName" required>
+            <button id="submitName">Submit Name</button>
+        </div>
+        <!--Name error message that is hidden initially-->
+        <div id="nameError" class="error hidden"></div>
+    </div>
+    
+    <div id="maxNumberSelection" class="hidden">
+        <!--Max Number Selection Section-->
+        <h2> Hi  <span id="displayName" style="color: blue"></span></h2>
+        <div class="input-selection">
+            <label for="maxNumber"> Enter the Maximum Number for game: </label><br>
+            <input type="number" id="maxNumber" min="2" required>
+            <button id="submitMaxNumber">Submit Max</button>
+        </div>
+        <!--Max number Error mesage that is initally hidden-->
+        <div id="maxNumberError" class="error hidden"></div>
+    </div>
+        
+        
+    <div id="gameSelection" class="hidden">
+        <!--Game Logic Section-->
+        <h2> Hi, <span id="displayingGameName" style="color: blue"></span>!</h2>
+        <div class="message" id="rangeMessage"></div>
+        <div class="input-selection">
+            <label for="guess">Enter your guess: </label><br>
+            <input type="number" id="guess" required>
+            <!--Error message for invalid guess-->
+            <div id="guessError" class="error hidden"></div>
+            <button id="submitGuess">Make this guess</button>
+            <!--Feedback message regarding the guess-->
+            <div id="feedbackMessage"></div>
+        </div>
+    </div>
+        
+    <div id="winSelection" class="hidden">
+         <div id="winMessage">YOU WIN!!! YOU GUESSED THE NUMBER!!</div>
+          <button id="playAgain">Play Again</button>
+    </div>
+    
+
+</body>
+<!--JavaScript for the game logic-->
+<script>
+
+    let playerName = "";
+    let maxNumber = 0;
+    let randomNumber = 0;
+    let minRange = 1;
+    let maxRange = 0;
+
+    //Dom Element referencing
+    const nameSection = document.getElementById("nameSection");
+    const maxNumberSelection = document.getElementById("maxNumberSelection");
+    const gameSelection = document.getElementById("gameSelection");
+    const winSelection = document.getElementById("winSelection");
+
+    const playerNameInput = document.getElementById("playerName");
+    const nameError = document.getElementById("nameError");
+    const displayName = document.getElementById("displayName");
+    const displayingGameName = document.getElementById("displayingGameName");
+
+    const guessInput = document.getElementById("guess");
+    const guessError = document.getElementById("guessError");
+    const rangeMessage = document.getElementById("rangeMessage");
+    const feedbackMessage = document.getElementById("feedbackMessage");
+
+    const maxNumberInput = document.getElementById("maxNumber");
+    const maxNumberError = document.getElementById("maxNumberError");
+
+    //Event listners for the the buttons
+    document.getElementById("submitName").addEventListener("click", validateName);
+    document.getElementById("submitMaxNumber").addEventListener("click", validateMaxNumber);
+    document.getElementById("submitGuess").addEventListener("click", validateGuess);
+    document.getElementById("playAgain").addEventListener("click", resetGame);
+
+    //Validate player name 
+    function validateName() {
+        const name = playerNameInput.value.trim();
+        if (name === ""){
+            nameError.textContent = "Name cannot be blank";
+            nameError.classList.remove("hidden");
+            return;
+        } 
+
+        //Store name and update display
+        playerName = name;
+        displayName.textContent = name;
+        displayingGameName.textContent = name;
+
+
+        //Hide the name section and show the max number
+        nameSection.classList.add("hidden");
+        nameError.classList.add("hidden");
+        maxNumberSelection.classList.remove("hidden");
+
+        
+    }
+
+    //Validate the maximum input 
+    function validateMaxNumber(){
+        const max = parseInt(maxNumberInput.value)
+
+        if(isNaN(max) || max < 2){
+            maxNumberError.textContent = "Please enter a value greater than 1";
+            maxNumberError.classList.remove("hidden");
+            return;
+        }
+        //Stoer the max number and generate the random number
+        maxNumber = max;
+        maxRange = max;
+        randomNumber = generateRandomNumber(1, max);
+
+        //Hide the maximum number section and show the game section
+        maxNumberSelection.classList.add("hidden");
+        maxNumberError.classList.add("hidden");
+        gameSelection.classList.remove("hidden");
+
+        updateRangeMessage();
+    }
+
+    //generate the random number between the min and max
+    function generateRandomNumber(min,max){
+        return Math.floor(Math.random() * (max-min + 1)) + min;
+    }
+
+
+    //update the displayed guessing range
+    function updateRangeMessage() {
+        rangeMessage.textContent = `Your guessing range is any value between ${minRange} to ${maxRange}`;
+    }
+
+    //validate the player's guess
+    function validateGuess() {
+        const guess = parseInt(guessInput.value);
+
+        if(isNaN(guess)){
+            guessError.textContent = "Enter a valid Number";
+            guessError.classList.remove("hidden");
+            return;
+        }
+        if (guess < minRange || guess > maxRange){
+            guessError.textContent = `Your guess is outside of the range ${minRange} to ${maxRange}`;
+            guessError.classList.remove("hidden");
+            return;
+        }
+        guessError.classList.add("hidden");
+        checkGuess(guess);
+    }
+
+    //Check if the guess is correct and update the game state
+    function checkGuess(guess) {
+        if (guess == randomNumber){
+            gameSelection.classList.add("hidden");
+            winSelection.classList.remove("hidden");
+            document.body.style.backgroundColor = "#d4edda"; // generates a green background
+            
+            return;
+        }else{
+            //Adjusts the range based on guess
+            if (guess < randomNumber){
+                 minRange = guess + 1;
+                 feedbackMessage.textContent = "Your guess is too low";
+            }else{
+                 maxRange = guess - 1;
+                 feedbackMessage.textContent = "Your guess is too high";
+            }
+
+             updateRangeMessage();
+             guessInput.value = "";
+        }
+    }
+
+
+function resetGame() {
+    //Resets the game to the inital state
+    document.body.style.background = "white";
+    winSelection.classList.add("hidden");
+    maxNumberSelection.classList.remove("hidden");
+
+    playerNameInput.value= "";
+    maxNumberInput.value = "";
+    guessInput.value = "";
+    feedbackMessage.textContent = "";
+
+    minRange = 1;
+    maxRange = 0;
+    randomNumber = 0;
+
+    maxNumberSelection.classList.add("hidden");
+    gameSelection.classList.add("hidden");
+    nameSection.classList.remove("hidden");
+   
+}
+
+</script>
+</html>
+
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
